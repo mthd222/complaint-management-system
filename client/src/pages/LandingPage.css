@@ -1,0 +1,49 @@
+/* Hero Section Styling (Existing) */
+.hero-section {
+  position: relative;
+  height: 80vh;
+  background-image: url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Features Section Styling (Existing) */
+.feature-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  font-size: 2rem;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Testimonials Section Styling (New) */
+.testimonial-avatar {
+    width: 80px;
+    height: 80px;
+    border: 3px solid #0d6efd; /* Primary blue border */
+    padding: 3px;
+    object-fit: cover;
+}

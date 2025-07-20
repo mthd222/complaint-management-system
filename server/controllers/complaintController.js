@@ -14,7 +14,14 @@ exports.createComplaint = async (req, res) => {
         department, 
         description 
     });
-    await newComplaint.save();
+
+    if (req.file) {
+      // The path will be something like 'public\uploads\image-167...jpg'
+      // We serve from /public, so the accessible URL is '/uploads/image-...'
+      newComplaint.image = req.file.path.replace('public', '');
+    }
+ const newComplaint1 = new Complaint(newComplaint);
+    await newComplaint1.save();
     
     const user = await User.findById(req.session.userId);
     const emailHtml = `
@@ -32,7 +39,7 @@ exports.createComplaint = async (req, res) => {
       html: emailHtml,
     });
     
-    res.status(201).json(newComplaint);
+    res.status(201).json(newComplaint1);
   } catch (error) {
     console.error("Error in createComplaint:", error);
     res.status(500).json({ message: 'Server Error' });
@@ -95,7 +102,15 @@ exports.updateComplaintStatus = async (req, res) => {
  */
 exports.getAllComplaints = async (req, res) => {
   try {
-    const complaints = await Complaint.find().populate('user', 'email').sort({ submittedAt: -1 });
+    const { search } = req.query; // Get search term from query params
+    
+    let query = {};
+    if (search) {
+      // If there's a search term, use the $text operator
+      query = { $text: { $search: search } };
+    }
+
+    const complaints = await Complaint.find(query).populate('user', 'email').sort({ submittedAt: -1 });
     res.status(200).json(complaints);
   } catch (error) {
     console.error("Error in getAllComplaints:", error);

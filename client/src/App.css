@@ -11,7 +11,7 @@ body {
   max-width: 900px;
   margin: 0 auto;
   padding: 2rem;
-  background-color: #0a0635;
+  /* background-color: #0a0635; */
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -87,4 +87,28 @@ th {
 .status-Closed {
   background-color: #28a745;
   color: #fff;
+}
+
+.auth-container {
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 960px; /* Max width for the split card */
+  overflow: hidden; /* Ensures the rounded corners apply to the image */
+}
+
+.auth-image-section {
+  background-image: url('https://images.unsplash.com/photo-1554177255-61502b352de3?q=80&w=2070&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  padding: 3rem;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }

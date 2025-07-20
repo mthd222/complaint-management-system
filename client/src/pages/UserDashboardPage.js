@@ -1,79 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api';
-import { Form, Button, Table, Card, Alert, Badge } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, Button, Alert, Badge, ListGroup, Spinner } from 'react-bootstrap';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Doughnut } from 'react-chartjs-2';
 
-// --- Complaint Form Component (Bootstrap Version) ---
-const ComplaintForm = ({ onNewComplaint }) => {
-  const [department, setDepartment] = useState('Hostel');
-  const [description, setDescription] = useState('');
-  const [error, setError] = useState('');
+ChartJS.register(ArcElement, Tooltip, Legend);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    if (!description.trim()) {
-      setError('Please provide a description for your complaint.');
-      return;
-    }
-    try {
-      const { data: newComplaint } = await api.post('/complaints', {
-        department,
-        description,
-      });
-      // Pass the new complaint up to the parent to update the list
-      onNewComplaint(newComplaint);
-      alert('Complaint submitted successfully!');
-      // Reset form fields
-      setDescription('');
-      setDepartment('Hostel');
-    } catch (err) {
-      setError('Failed to submit complaint. Please try again.');
-      console.error('Error submitting complaint:', err);
-    }
-  };
-
-  return (
-    <Card className="mb-4">
-      <Card.Header as="h3">Submit a New Complaint</Card.Header>
-      <Card.Body>
-        {error && <Alert variant="danger">{error}</Alert>}
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3" controlId="department">
-            <Form.Label>Department</Form.Label>
-            <Form.Select value={department} onChange={(e) => setDepartment(e.target.value)}>
-              <option value="Hostel">Hostel</option>
-              <option value="Internet">Internet</option>
-              <option value="Classroom">Classroom</option>
-              <option value="Faculty">Faculty</option>
-              <option value="Other">Other</option>
-            </Form.Select>
-          </Form.Group>
-          <Form.Group className="mb-3" controlId="description">
-            <Form.Label>Description</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={4}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe your issue in detail..."
-              required
-            />
-          </Form.Group>
-          <Button variant="primary" type="submit">
-            Submit Complaint
-          </Button>
-        </Form>
-      </Card.Body>
-    </Card>
-  );
-};
-
-
-// --- User Dashboard Page ---
 const UserDashboardPage = () => {
   const [myComplaints, setMyComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  // States for the complaint form
+  const [department, setDepartment] = useState('Hostel');
+  const [description, setDescription] = useState('');
+  const [image, setImage] = useState(null); // State for the image file
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
 
   useEffect(() => {
     const fetchMyComplaints = async () => {
@@ -90,63 +33,132 @@ const UserDashboardPage = () => {
     fetchMyComplaints();
   }, []);
 
-  const handleNewComplaint = (newComplaint) => {
-    setMyComplaints(prev => [newComplaint, ...prev]);
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
   };
 
-  const getBadgeVariant = (status) => {
-    switch (status) {
-      case 'Pending': return 'warning';
-      case 'In Progress': return 'info';
-      case 'Closed': return 'success';
-      default: return 'secondary';
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setFormError('');
+    if (!description.trim()) {
+      setFormError('Description cannot be empty.');
+      return;
+    }
+
+    setIsSubmitting(true); // Disable button
+
+    // FormData is required for file uploads
+    const formData = new FormData();
+    formData.append('department', department);
+    formData.append('description', description);
+    if (image) {
+      formData.append('image', image);
+    }
+
+    try {
+      const { data: newComplaint } = await api.post('/complaints', formData);
+      setMyComplaints(prev => [newComplaint, ...prev]);
+      // Reset form fields
+      setDescription('');
+      setDepartment('Hostel');
+      setImage(null);
+      e.target.reset(); // This clears the file input
+    } catch (err) {
+      setFormError('Failed to submit complaint.');
+    } finally {
+      setIsSubmitting(false); // Re-enable button
     }
   };
 
+  // Data for Stats and Chart
+  const pendingCount = myComplaints.filter(c => c.status === 'Pending').length;
+  const inProgressCount = myComplaints.filter(c => c.status === 'In Progress').length;
+  const closedCount = myComplaints.filter(c => c.status === 'Closed').length;
+
+  const chartData = {
+    labels: ['Pending', 'In Progress', 'Closed'],
+    datasets: [{
+      label: 'Complaint Statuses',
+      data: [pendingCount, inProgressCount, closedCount],
+      backgroundColor: ['#ffc107', '#0dcaf0', '#198754'],
+      borderColor: ['#fff'],
+      borderWidth: 2,
+    }],
+  };
+  
+  const getBadgeVariant = (status) => ({
+      'Pending': 'warning',
+      'In Progress': 'info',
+      'Closed': 'success'
+  }[status] || 'secondary');
+
   return (
-    <div>
-      <h2 className="mb-3">My Dashboard 🙋‍♂️</h2>
-      <ComplaintForm onNewComplaint={handleNewComplaint} />
+    <Container fluid>
+      <h2 className="mb-4">My Dashboard 👋</h2>
       
-      <h3>My Submitted Complaints</h3>
-      {loading && <Alert variant="info">Loading your complaints...</Alert>}
-      {error && <Alert variant="danger">{error}</Alert>}
-      
-      {!loading && !error && (
-        <Table striped bordered hover responsive>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Department</th>
-              <th>Description</th>
-              <th>Submitted</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {myComplaints.length > 0 ? (
-              myComplaints.map((c, index) => (
-                <tr key={c._id}>
-                  <td>{index + 1}</td>
-                  <td>{c.department}</td>
-                  <td>{c.description}</td>
-                  <td>{new Date(c.submittedAt).toLocaleString()}</td>
-                  <td>
-                    <Badge bg={getBadgeVariant(c.status)}>{c.status}</Badge>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="text-center">
-                  You haven't submitted any complaints yet.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </Table>
-      )}
-    </div>
+      {/* Stat Cards */}
+      <Row className="mb-4">
+        <Col md={4}><Card bg="primary" text="white" className="shadow-sm"><Card.Body><Card.Title>{myComplaints.length}</Card.Title><Card.Text>Total Complaints</Card.Text></Card.Body></Card></Col>
+        <Col md={4}><Card bg="warning" text="dark" className="shadow-sm"><Card.Body><Card.Title>{pendingCount}</Card.Title><Card.Text>Pending Issues</Card.Text></Card.Body></Card></Col>
+        <Col md={4}><Card bg="success" text="white" className="shadow-sm"><Card.Body><Card.Title>{closedCount}</Card.Title><Card.Text>Resolved Issues</Card.Text></Card.Body></Card></Col>
+      </Row>
+
+      <Row>
+        {/* Left Column: Form & Recent Complaints */}
+        <Col lg={8}>
+          <Card className="mb-4 shadow-sm">
+            <Card.Header as="h4">Submit a New Complaint</Card.Header>
+            <Card.Body>
+              {formError && <Alert variant="danger">{formError}</Alert>}
+              <Form onSubmit={handleSubmit}>
+                <Row>
+                  <Col md={6} className="mb-3"><Form.Label>Department</Form.Label><Form.Select value={department} onChange={e => setDepartment(e.target.value)}><option>Hostel</option><option>Internet</option><option>Classroom</option><option>Faculty</option><option>Other</option></Form.Select></Col>
+                  <Col md={6} className="mb-3"><Form.Label>Attach an Image (Optional)</Form.Label><Form.Control type="file" onChange={handleImageChange} /></Col>
+                  <Col md={12}><Form.Group className="mb-3"><Form.Label>Description</Form.Label><Form.Control as="textarea" rows={3} value={description} onChange={e => setDescription(e.target.value)} required /></Form.Group></Col>
+                </Row>
+                <Button variant="primary" type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? <><Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" /> Submitting...</> : 'Submit Complaint'}
+                </Button>
+              </Form>
+            </Card.Body>
+          </Card>
+          
+          <Card className="shadow-sm">
+            <Card.Header as="h4">Complaint History</Card.Header>
+            <ListGroup variant="flush">
+              {loading ? <ListGroup.Item className="text-center"><Spinner animation="border" /></ListGroup.Item> : myComplaints.length > 0 ? myComplaints.map(c => (
+                <ListGroup.Item key={c._id} className="d-flex justify-content-between align-items-start">
+                  <div className="ms-2 me-auto">
+                    <div className="fw-bold">{c.department}</div>
+                    {c.description}
+                    {/* Display image if it exists */}
+                    {c.image && (
+                        <div className="mt-2">
+                            <a href={`http://localhost:5000${c.image}`} target="_blank" rel="noopener noreferrer">
+                                <img src={`http://localhost:5000${c.image}`} alt="Complaint attachment" style={{ maxWidth: '100px', borderRadius: '5px' }} />
+                            </a>
+                        </div>
+                    )}
+                    <div className="text-muted small mt-1">{new Date(c.submittedAt).toLocaleString()}</div>
+                  </div>
+                  <Badge bg={getBadgeVariant(c.status)} pill>{c.status}</Badge>
+                </ListGroup.Item>
+              )) : <ListGroup.Item>No complaints submitted yet.</ListGroup.Item>}
+            </ListGroup>
+          </Card>
+        </Col>
+
+        {/* Right Column: Chart */}
+        <Col lg={4}>
+          <Card className="shadow-sm">
+            <Card.Header as="h4">Status Overview</Card.Header>
+            <Card.Body>
+              {myComplaints.length > 0 ? <Doughnut data={chartData} options={{ maintainAspectRatio: true }}/> : <p className="text-center text-muted">No data to display.</p>}
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

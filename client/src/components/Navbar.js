@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { Navbar, Nav, Button, Container } from 'react-bootstrap'; // Import components
-
+// import './Navbar.css';
 const AppNavbar = () => { // Renamed to avoid conflict with imported Navbar
     const { user, logout } = useContext(AuthContext);
     const navigate = useNavigate();
@@ -15,7 +15,7 @@ const AppNavbar = () => { // Renamed to avoid conflict with imported Navbar
     return (
         <Navbar bg="primary" variant="dark" expand="lg" collapseOnSelect>
             <Container>
-                <Navbar.Brand as={Link} to="/">ComplaintSystem</Navbar.Brand>
+                <Navbar.Brand as={Link} to="/" className="fw-bold"> ComplaintSystem</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="ms-auto">
@@ -31,8 +31,8 @@ const AppNavbar = () => { // Renamed to avoid conflict with imported Navbar
                             </>
                         ) : (
                             <>
-                                <Nav.Link as={Link} to="/login">Login</Nav.Link>
-                                <Nav.Link as={Link} to="/register">Register</Nav.Link>
+                                <Nav.Link as={Link} to="/login" className="fw-bold">Login</Nav.Link>
+                                <Nav.Link as={Link} to="/register" className="fw-bold">Register</Nav.Link>
                             </>
                         )}
                     </Nav>

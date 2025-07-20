@@ -23,6 +23,10 @@ const complaintSchema = new mongoose.Schema({
     enum: ['Pending', 'In Progress', 'Closed'],
     default: 'Pending',
   },
+ image: {
+  type: String,
+  default: ''
+},
   submittedAt: {
     type: Date,
     default: Date.now,
@@ -31,6 +35,11 @@ const complaintSchema = new mongoose.Schema({
     type: String,
     default: '',
   }
+});
+
+complaintSchema.index({
+  description: 'text',
+  department: 'text'
 });
 
 module.exports = mongoose.model('Complaint', complaintSchema);

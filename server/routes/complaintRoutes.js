@@ -1,3 +1,4 @@
+const upload = require('../middleware/multer');
 const express = require('express');
 const router = express.Router();
 const {
@@ -9,7 +10,8 @@ const {
 const { protect, admin } = require('../middleware/authMiddleware');
 
 // User can create a complaint
-router.post('/', protect, createComplaint);
+// router.post('/', protect, createComplaint);
+router.post('/', protect, upload.single('image'), createComplaint);
 
 // User can view their own complaints
 router.get('/my-complaints', protect, getMyComplaints);
@@ -19,5 +21,6 @@ router.get('/', protect, admin, getAllComplaints);
 
 // Admin can update a complaint
 router.put('/:id', protect, admin, updateComplaintStatus);
+
 
 module.exports = router;
