@@ -37,6 +37,17 @@ const UserDashboardPage = () => {
     setImage(e.target.files[0]);
   };
 
+const handleDelete = async (id) => {
+    if (window.confirm('Are you sure you want to delete this complaint?')) {
+      try {
+        await api.delete(`/complaints/${id}`);
+        setMyComplaints(prev => prev.filter(c => c._id !== id));
+      } catch (err) {
+        alert('Failed to delete the complaint.');
+      }
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFormError('');
@@ -141,7 +152,12 @@ const UserDashboardPage = () => {
                     )}
                     <div className="text-muted small mt-1">{new Date(c.submittedAt).toLocaleString()}</div>
                   </div>
-                  <Badge bg={getBadgeVariant(c.status)} pill>{c.status}</Badge>
+                  <div className="d-flex align-items-center">
+                <Badge bg={getBadgeVariant(c.status)} pill className="me-3">{c.status}</Badge>
+                <Button variant="outline-danger" size="sm" onClick={() => handleDelete(c._id)}>
+                  <i className="bi bi-trash"></i>
+                </Button>
+              </div>
                 </ListGroup.Item>
               )) : <ListGroup.Item>No complaints submitted yet.</ListGroup.Item>}
             </ListGroup>

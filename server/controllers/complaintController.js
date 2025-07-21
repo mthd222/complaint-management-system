@@ -15,6 +15,8 @@ exports.createComplaint = async (req, res) => {
         description 
     });
 
+    
+
     if (req.file) {
       // The path will be something like 'public\uploads\image-167...jpg'
       // We serve from /public, so the accessible URL is '/uploads/image-...'
@@ -45,6 +47,42 @@ exports.createComplaint = async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 };
+
+exports.deleteComplaint = async (req, res) => {
+  try {
+    const complaint = await Complaint.findById(req.params.id);
+
+    if (!complaint) {
+      return res.status(404).json({ message: 'Complaint not found' });
+    }
+
+    // Authorization Check: User must be an admin OR the owner of the complaint
+    if (req.session.role !== 'admin' && complaint.user.toString() !== req.session.userId) {
+      return res.status(403).json({ message: 'User not authorized to delete this complaint' });
+    }
+
+    // If there's an image, delete it from the filesystem
+    if (complaint.image) {
+      // Construct the full path to the image
+      const imagePath = path.join(__dirname, '..', 'public', complaint.image);
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          // Log the error but don't block the complaint deletion
+          console.error(`Failed to delete image file: ${imagePath}`, err);
+        }
+      });
+    }
+
+    // Delete the complaint from the database
+    await Complaint.findByIdAndDelete(req.params.id);
+
+    res.status(200).json({ message: 'Complaint deleted successfully' });
+  } catch (error) {
+    console.error("Error in deleteComplaint:", error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
 
 /**
  * @desc    Update a complaint's status (for Admin)

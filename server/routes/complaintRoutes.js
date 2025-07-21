@@ -6,6 +6,7 @@ const {
   getAllComplaints,
   getMyComplaints, // Import new controller
   updateComplaintStatus,
+  deleteComplaint
 } = require('../controllers/complaintController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
@@ -22,5 +23,6 @@ router.get('/', protect, admin, getAllComplaints);
 // Admin can update a complaint
 router.put('/:id', protect, admin, updateComplaintStatus);
 
+router.delete('/:id', protect, deleteComplaint);
 
 module.exports = router;

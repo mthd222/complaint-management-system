@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import api from '../api';
-import { Table, Form, Alert, Badge, Spinner, Row, Col, Card } from 'react-bootstrap';
+import { Table, Form, Alert, Badge, Spinner, Row, Col, Card,Button } from 'react-bootstrap';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 
@@ -56,6 +56,19 @@ const AdminDashboardPage = () => {
       }],
     };
   }, [complaints]);
+
+ const handleDelete = async (id) => {
+    // Crucial UX: Confirm before deleting!
+    if (window.confirm('Are you sure you want to delete this complaint permanently?')) {
+      try {
+        await api.delete(`/complaints/${id}`);
+        // Remove the complaint from the local state to update the UI instantly
+        setComplaints(prev => prev.filter(c => c._id !== id));
+      } catch (err) {
+        alert('Failed to delete the complaint.');
+      }
+    }
+  };
 
   const handleStatusChange = async (id, status) => {
     try {
@@ -161,6 +174,11 @@ const AdminDashboardPage = () => {
                     <option value="Closed">Closed</option>
                   </Form.Select>
                 </td>
+                <td> {/* Add new cell */}
+                <Button variant="danger" size="sm" onClick={() => handleDelete(c._id)}>
+                  <i className="bi bi-trash"></i>
+                </Button>
+              </td>
               </tr>
             ))
           ) : (
