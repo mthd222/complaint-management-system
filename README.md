@@ -1,75 +1,47 @@
-Of course. Here is the updated `README.md` content with the formatted command blocks, provided as plain text for you to copy.
-
-````markdown
 # Complaint Management System 📋
 
-A full-stack MERN application designed to streamline the entire lifecycle of complaint resolution within an organization or educational institution. This system provides a centralized, transparent, and efficient platform for users, staff, and administrators.
+A full-stack web application built with the MERN stack that allows users to submit complaints and enables administrators to manage them effectively.
 
 ---
 
-## ✨ Key Features
+## Features
 
--   **Multi-Level Role System (User, Staff, Admin):**
-    -   **Users:** Can submit complaints, upload images, track status, and view a complete history and audit trail of their submissions.
-    -   **Staff:** Can view and manage complaints specifically assigned to them, submit resolution notes, and mark issues as 'Resolved'.
-    -   **Admins:** Have full oversight. They can view all complaints, manage departments, assign complaints to staff, and give final approval to close resolved issues.
-
--   **Advanced Complaint Workflow:**
-    -   **Submission & Assignment:** Users submit complaints to a specific department. Admins can then assign the complaint to a relevant staff member.
-    -   **Two-Step Resolution:** Staff members resolve the issue and submit it for review. Admins have the final authority to approve the resolution and close the complaint.
-    -   **Status Tracking:** Complaints move through a clear lifecycle: `Pending` → `In Progress` → `Resolved` → `Closed`.
-
--   **Comprehensive Dashboards:**
-    -   **User Dashboard:** Features statistical widgets (total, pending, closed), a doughnut chart visualizing complaint statuses, a submission form, and a detailed history list.
-    -   **Staff Dashboard:** A dedicated view showing only the complaints assigned to the logged-in staff member.
-    -   **Admin Dashboard:** An all-in-one control panel with analytics (complaints per department), full-text search, status filtering, and complete management capabilities.
-
--   **Accountability & Transparency:**
-    -   **Activity Log (Audit Trail):** Every significant action (creation, status change, assignment) is time-stamped and logged for each complaint, visible to both users and admins.
-    -   **Automated Email Notifications:** Users are automatically notified via email upon complaint submission and on every status update, ensuring they are always kept in the loop.
-
--   **Rich Content & Management:**
-    -   **Image Uploads:** Users can upload an image with their complaint to provide clear visual context.
-    -   **Department Management:** Admins have a dedicated interface to create and manage the various departments within the system.
+-   **User Authentication**: Secure user registration and login system with session management.
+-   **Role-Based Access Control**: Differentiates between regular **Users** and **Admins**.
+-   **Complaint Submission**: Logged-in users can submit complaints through a clean, easy-to-use form.
+-   **User Dashboard**: Users can view a history of their own submitted complaints and track their status.
+-   **Admin Dashboard**: Admins have access to a dashboard to view all user complaints. They can filter complaints by status (Pending, In Progress, Closed).
+-   **Status Management**: Admins can update the status of any complaint.
+-   **Email Notifications**: Users automatically receive email confirmations when they submit a complaint and when an admin updates its status.
 
 ---
 
 ## 💻 Tech Stack
 
-| Layer       | Technology/Library     | Purpose                                       |
-|-------------|------------------------|-----------------------------------------------|
-| **Frontend**| React                  | Building the user interface                   |
-|             | React-Bootstrap        | Responsive UI components                      |
-|             | React Router           | Client-side routing                           |
-|             | Axios                  | Making HTTP requests to the backend           |
-|             | Chart.js               | Data visualization for dashboards             |
-| **Backend** | Node.js                | JavaScript runtime environment                |
-|             | Express.js             | Web application framework for the API         |
-|             | Mongoose               | Object Data Modeling for MongoDB              |
-|             | Express Session        | Session-based authentication                  |
-|             | Nodemailer             | Sending automated email notifications         |
-|             | Multer                 | Handling file uploads                         |
-|             | Concurrently           | Running backend and frontend with one command |
-| **Database**| MongoDB                | NoSQL database to store application data      |
+-   **Frontend**: React, React-Bootstrap, React Router
+-   **Backend**: Node.js, Express.js
+-   **Database**: MongoDB with Mongoose
+-   **Authentication**: Express Session
+-   **Email**: Nodemailer
 
 ---
 
 ## 🚀 Getting Started
 
-Follow these instructions to get a copy of the project up and running on your local machine.
+Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
 
 ### **Prerequisites**
 
--   Node.js (v18.x or higher)
--   npm (v9.x or higher)
--   MongoDB (running locally or a cloud instance like MongoDB Atlas)
+-   Node.js (v14 or higher)
+-   npm
+-   MongoDB (either running locally or a cloud instance like MongoDB Atlas)
 
 ### **Installation & Setup**
 
 1.  **Clone the repository:**
     ```sh
-    git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
-    cd your-repo-name
+    git clone [https://github.com/your-username/complaint-management-system.git](https://github.com/your-username/complaint-management-system.git)
+    cd complaint-management-system
     ```
 
 2.  **Backend Setup:**
@@ -80,43 +52,42 @@ Follow these instructions to get a copy of the project up and running on your lo
     # Install dependencies
     npm install
 
-    # Create a .env file in the /server directory and add the following:
+    # Create a .env file in the /server directory and add the following variables
+    # (use .env.example as a template if provided)
     MONGO_URI=your_mongodb_connection_string
     PORT=5000
-    SESSION_SECRET=your_super_secret_key
+    SESSION_SECRET=a_very_strong_secret_key
 
-    # (Optional) For email functionality
-    EMAIL_USER=your_email@example.com
-    EMAIL_PASS=your_email_app_password
+    # For email functionality
+    EMAIL_USER=your_test_email@example.com
+    EMAIL_PASS=your_email_password_or_app_password
+
+    # Start the backend server
+    npm start
     ```
 
 3.  **Frontend Setup:**
     ```sh
-    # From the root directory, navigate to the client folder
-    cd ../client
+    # Open a new terminal and navigate to the client directory
+    cd client
 
     # Install dependencies
     npm install
-    ```
 
-4.  **Run the Application:**
-    ```sh
-    # From the root project directory
-    npm install concurrently -D # If not already installed
-    npm run dev
+    # Start the frontend React app
+    npm start
     ```
-    This single command will start both the backend server (on port 5000) and the frontend React app (on port 3000).
+The application will be available at `http://localhost:3000`.
 
 ---
 
-### **Admin and Staff Setup**
+### **Creating an Admin User**
 
-By default, all registered users have the `user` role. To create an admin or staff member:
+By default, all registered users have the `user` role. To create an admin:
 
 1.  Register a new user through the application's UI.
-2.  Connect to your MongoDB database.
-3.  Navigate to the `users` collection.
+2.  Connect to your MongoDB database using a tool like MongoDB Compass or the shell.
+3.  Navigate to the `complaint_system` database and open the `users` collection.
 4.  Find the user you just created and edit their document.
-5.  Change the `role` field from `"user"` to either `"admin"` or `"staff"`.
-6.  Log in with this user's credentials to access the appropriate dashboard.
-````
+5.  Change the `role` field from `"user"` to `"admin"`.
+6.  Log in with this user's credentials to access the admin dashboard.
