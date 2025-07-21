@@ -4,6 +4,8 @@ import { AuthProvider, AuthContext } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AppNavbar from './components/Navbar';
 import { Container } from 'react-bootstrap';
+import DepartmentManagementPage from './pages/DepartmentManagementPage';
+import StaffDashboardPage from './pages/StaffDashboardPage';
 
 // Import Pages
 import LandingPage from './pages/LandingPage'; // Import the new landing page
@@ -16,8 +18,15 @@ import AdminDashboardPage from './pages/AdminDashboardPage';
 const PublicRoute = ({ children }) => {
     const { user } = useContext(AuthContext);
     if (user) {
-        // Redirect to the appropriate dashboard if the user is already logged in
-        return <Navigate to={user.role === 'admin' ? '/admin' : '/dashboard'} />;
+        // --- THIS IS THE CORRECTED LOGIC ---
+        if (user.role === 'admin') {
+            return <Navigate to="/admin" />;
+        }
+        if (user.role === 'staff') {
+            return <Navigate to="/staff-dashboard" />;
+        }
+        return <Navigate to="/dashboard" />;
+        // --- END OF CORRECTION ---
     }
     return children;
 };
@@ -52,7 +61,17 @@ function App() {
             
             {/* Fallback Route */}
             <Route path="*" element={<Navigate to="/" />} />
+<Route path="/admin/departments" element={
+    <ProtectedRoute adminOnly={true}>
+        <Container className="mt-4"><DepartmentManagementPage /></Container>
+    </ProtectedRoute>
+} />
 
+<Route path="/staff-dashboard" element={
+    <ProtectedRoute> {/* You can add a staffOnly prop if needed */}
+        <Container className="mt-4"><StaffDashboardPage /></Container>
+    </ProtectedRoute>
+} />
           </Routes>
         </main>
       </Router>

@@ -30,8 +30,15 @@ const LoginPage = () => {
     try {
       const { data } = await api.post('/auth/login', { email, password });
       setUser(data);
-      navigate(data.role === 'admin' ? '/admin' : '/dashboard');
-    } catch (err) {
+      // New Redirect Logic
+      if (data.role === 'admin') {
+        navigate('/admin');
+      } else if (data.role === 'staff') {
+        navigate('/staff-dashboard');
+      } else {
+        navigate('/dashboard');
+      }
+    }catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
     }
   };

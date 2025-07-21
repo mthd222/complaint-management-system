@@ -1,0 +1,25 @@
+{
+  "name": "cms-g",
+  "version": "1.0.0",
+  "description": "A full-stack web application built with the MERN stack that allows users to submit complaints and enables administrators to manage them effectively.",
+  "main": "index.js",
+  "scripts": {
+  "server": "npm start --prefix server",
+  "client": "npm start --prefix client",
+  "dev": "concurrently \"npm run server\" \"npm run client\""
+},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mthd222/complaint-management-system.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mthd222/complaint-management-system/issues"
+  },
+  "homepage": "https://github.com/mthd222/complaint-management-system#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  }
+}

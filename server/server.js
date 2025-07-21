@@ -4,7 +4,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
-
+const departmentRoutes = require('./routes/departmentRoutes');
 // Load environment variables
 dotenv.config();
 
@@ -45,7 +45,7 @@ app.use(session({
 // Must come AFTER the middleware configuration
 app.use('/api/auth', authRoutes);
 app.use('/api/complaints', complaintRoutes);
-
+app.use('/api/departments', departmentRoutes);
 // --- Database Connection & Server Start ---
 const PORT = process.env.PORT || 5000;
 

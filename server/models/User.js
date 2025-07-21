@@ -13,10 +13,10 @@ const UserSchema = new mongoose.Schema({
     required: true,
   },
   role: {
-    type: String,
-    enum: ['user', 'admin'],
-    default: 'user',
-  },
+  type: String,
+  enum: ['user', 'staff', 'admin'], // <-- Add the 'staff' role
+  default: 'user',
+},
 });
 
 // Hash password before saving
